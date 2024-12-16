@@ -48,13 +48,13 @@ const TabsLayout = () => {
     />
 
 <Tabs.Screen
-    name = "learn"
+    name = "antivish"
     options={{
-        title: 'Learn',
+        title: 'antivish',
         headerShown: false, 
         tabBarIcon:({color, focused}) =>(
             <TabIcon 
-                    icon = {icons.teaching}
+                    icon = {icons.phonecall}
                     color = {color}               
                     //name = "Home"
                     focused = {focused}
@@ -65,13 +65,13 @@ const TabsLayout = () => {
     />
 
 <Tabs.Screen
-    name = "antivish"
+    name = "home"
     options={{
-        title: 'AntiVish',
+        title: 'Home',
         headerShown: false, 
         tabBarIcon:({color, focused}) =>(
             <TabIcon 
-                    icon = {icons.phonecall}
+                    icon = {icons.home}
                     color = {color}               
                    // name = "Home"
                     focused = {focused}
@@ -99,13 +99,13 @@ const TabsLayout = () => {
     />
 
 <Tabs.Screen
-    name = "profile"
+    name = "learn"
     options={{
-        title: 'Profile',
+        title: 'Learn',
         headerShown: false, 
         tabBarIcon:({color, focused}) =>(
             <TabIcon 
-                    icon = {icons.profile}
+                    icon = {icons.teaching}
                     color = {color}               
                     //name = "Home"
                     focused = {focused}

@@ -51,7 +51,7 @@ const SignUp = () => {
           />
           <CustomButton
             title="Sign Up"
-            handlePress={()=>{router.push("/antivish")}}
+            handlePress={()=>{router.push("/home")}}
             containerStyles="mt-7"
             isLoading={isSubmitting}
           />

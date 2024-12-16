@@ -43,7 +43,7 @@ const SignIn = () => {
           />
           <CustomButton
             title = "Sign In"
-            handlePress = {()=>{router.push("/antivish")}} 
+            handlePress = {()=>{router.push("/home")}} 
             containerStyles = "mt-7"
             isLoading = {isSubmitting}
           />
