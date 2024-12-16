@@ -26,7 +26,7 @@ const SignUp = () => {
             className="w-[115px] h-[35px]"
           />
           <Text className="text-2xl text-white text-semibold mt-10 font-psemibold">
-            Sign Up to Aora
+            Sign Up to SecureLah
           </Text>
           <FormField
             title="Username"
@@ -51,7 +51,7 @@ const SignUp = () => {
           />
           <CustomButton
             title="Sign Up"
-            handlePress={()=>{router.push("/home")}}
+            handlePress={()=>{router.push("/antivish")}}
             containerStyles="mt-7"
             isLoading={isSubmitting}
           />

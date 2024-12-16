@@ -24,15 +24,15 @@ export default function Index() {
           />
           <View className="relative mt-1">
             <Text className="text-3xl text-white font-bold text-center">
-              Discover Endless{"\n"}
-              Possibilities with{" "}
-              <Text className="text-secondary-200">Aora</Text>
+            Safeguard Your World from{"\n"}
+            Threats with{" "}
+              <Text className="text-secondary-200">SecureLah</Text>
             </Text>
           </View>
           {" "}
           <Text className="text-sm font-pregular text-gray-100 mt-7 text-center">
-            Where creativity meets innovation: embark on a journey of limitless
-            exploration with Aora
+          Protect yourself from vishing and other cyber threats. {"\n"}
+          Take control of your security journey with SecureLah.
           </Text>
           <CustomButton
             title="Continue with Email"
