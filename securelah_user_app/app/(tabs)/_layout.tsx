@@ -27,7 +27,7 @@ const TabsLayout = () => {
         backgroundColor: "#161622",
         borderTopWidth: 1,
         borderTopColor: "#232533",
-        height: 90,
+        height: 50,
     }
    }}
    >
@@ -56,7 +56,7 @@ const TabsLayout = () => {
             <TabIcon 
                     icon = {icons.phonecall}
                     color = {color}               
-                    //name = "Home"
+                    name = "Home"
                     focused = {focused}
                     
                     />
