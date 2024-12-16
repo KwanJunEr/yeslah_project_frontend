@@ -7,7 +7,7 @@ const RiskAssessmentBox = () => {
 const riskLevel = 'Low'; // This could be dynamic based on actual risk assessment
 const riskColor = '#4CAF50'; // Green for low risk
   return (
-    <View className='bg-white rounded-sm p-6 my-3  shadow-md'>
+    <View className='bg-white rounded-sm py-6 px-8 my-3  shadow-md flex justify-center items-center'>
       <Text className='text-[18px] font-extrabold text-black mb-8 text-center'>Risk Assessment Overview</Text>
 
       <View className='flex flex-col items-center justify-center my-3'>
@@ -42,9 +42,9 @@ const riskColor = '#4CAF50'; // Green for low risk
           </SvgText>
         </Svg>
         <View className='ml-10 flex-col mt-3'>
-          <Text className='font-bold text-lg'>Vishing Attempts Detected: <Text className='font-semibold'> 3</Text></Text>
-          <Text className='font-bold text-lg'>Personal Risk Score: <Text className='font-semibold'> 4/10</Text></Text>
-          <Text className='text-base text-gray-600'>Learn more about identifying vishing <Link href="/" className='text-blue underline'>here</Link></Text>
+          <Text className=' text-center font-bold text-lg'>Vishing Attempts Detected: <Text className='font-semibold'> 3</Text></Text>
+          <Text className='text-center font-bold text-lg'>Personal Risk Score: <Text className='font-semibold'> 4/10</Text></Text>
+          <Text className='text-base text-center text-gray-600 mt-4'>Learn more about identifying vishing <Link href="/" className='text-blue underline'>here</Link></Text>
         </View>
         
       </View>

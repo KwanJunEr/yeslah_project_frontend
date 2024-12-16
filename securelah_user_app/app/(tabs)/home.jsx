@@ -2,8 +2,8 @@ import { View, Text, ScrollView, Image } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../../constants";
-import RiskAssessmentBox from '../../components/RiskAssessmentBox';
-
+import RiskAssessmentBox from "../../components/RiskAssessmentBox";
+import NextStepBox from "../../components/NextStepBox";
 
 const Home = () => {
   return (
@@ -27,10 +27,49 @@ const Home = () => {
           </View>
         </View>
         <View className="flex justify-center items-center">
-          <RiskAssessmentBox/>
+          <RiskAssessmentBox />
         </View>
-        <View className="flex flex-row space-x-2">
+        {/* Horizontal ScrollView */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 10 }}
+          className="my-7"
+        >
+          <View className="bg-gray-800 p-4 rounded-xl mr-3 flex-row">
+           
+            <View className="flex flex-col">
+              <View>
+                <Text className="text-white text-base">
+                  Suspicious Calls Blocked
+                </Text>
+              </View>
+              <View className="flex-row">
+                <Text className="font-extrabold text-white text-xl">3</Text>
+                <Text className="text-green-500 text-base ml-10">+55%</Text>
+              </View>
+            </View>
+          </View>
 
+          <View className="bg-gray-800 p-4 rounded-xl mr-3 flex-row">
+            
+            <View className="flex flex-col">
+              <View>
+                <Text className="text-white text-base">
+                  Unknown Calls Detected
+                </Text>
+              </View>
+              <View className="flex-row">
+                <Text className="font-extrabold text-white text-xl">5</Text>
+                <Text className="text-green-500 text-base ml-10">+10%</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Add more boxes here if needed */}
+        </ScrollView>
+        <View>
+          <NextStepBox />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -38,3 +77,5 @@ const Home = () => {
 };
 
 export default Home;
+
+
