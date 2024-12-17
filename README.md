@@ -28,7 +28,6 @@
     <ul>
       <li>
         Individuals seeking to improve their personal cybersecurity defenses against phishing attacks while learning to recognize and respond to threats in real-time.
-
       </li>
     </ul>
   </li>
