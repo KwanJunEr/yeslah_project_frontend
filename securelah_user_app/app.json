@@ -16,10 +16,15 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": ["android.permission.SCHEDULE_EXACT_ALARM",
+      "permissions": [
+        "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.READ_PHONE_STATE",
+        "android.permission.READ_CALL_LOG",
+        "android.permission.SCHEDULE_EXACT_ALARM",
         "android.permission.READ_PHONE_STATE",
         "android.permission.READ_CALL_LOG"
-    ]
+      ],
+      "package": "com.anonymous.securelah_user_app"
     },
     "web": {
       "bundler": "metro",

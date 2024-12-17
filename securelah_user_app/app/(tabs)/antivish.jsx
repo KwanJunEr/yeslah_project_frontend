@@ -1,23 +1,89 @@
 import React, { useState } from 'react'
-import { View, Text, ScrollView, TouchableOpacity, Modal } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, Modal, StyleSheet} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import {
   PermissionsAndroid,
-  StyleSheet,
-  Text,
   TouchableHighlight,
-  View,
 } from 'react-native';
 import CallDetectorManager from 'react-native-call-detection';
+import { useEffect , useRef} from 'react';
 
 const AntiVish = () => {
   const [modalVisible, setModalVisible] = useState(false)
+  const [featureOn, setFeatureOn] = useState(false);
+  const [incoming, setIncoming] = useState(false);
+  const [number, setNumber] = useState(null);
+
+// Use useRef to store the callDetector instance
+const callDetectorRef = useRef(null);
+
+useEffect(()=>{
+  askPermission();
+},[]);
+
+const askPermission = async () =>{
+  try {
+    const permissions = await PermissionsAndroid.requestMultiple([
+      PermissionsAndroid.PERMISSIONS.READ_CALL_LOG,
+      PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE,
+    ]);
+    console.log('Permissions are:', permissions);
+  } catch (err) {
+    console.warn(err);
+  }
+}
+
+const startListenerTapped = () => {
+  setFeatureOn(true);
+  
+  // Create call detector and store in ref
+  callDetectorRef.current = new CallDetectorManager(
+    (event, phoneNumber) => {
+      console.log(event, phoneNumber);
+      
+      switch(event) {
+        case 'Disconnected':
+          setIncoming(false);
+          setNumber(null);
+          break;
+        case 'Incoming':
+          setIncoming(true);
+          setNumber(phoneNumber);
+          break;
+        case 'Offhook':
+          setIncoming(true);
+          setNumber(phoneNumber);
+          break;
+        case 'Missed':
+          setIncoming(false);
+          setNumber(null);
+          break;
+      }
+    },
+    true, // read phone number on Android
+    () => {}, // permission denied callback
+    {
+      title: 'Phone State Permission',
+      message: 'This app needs access to your phone state to detect incoming calls.',
+    }
+  );
+};
+
+const stopListenerTapped = () => {
+  // Use current to access the ref and dispose
+  if (callDetectorRef.current) {
+    callDetectorRef.current.dispose();
+  }
+  setFeatureOn(false);
+  setIncoming(false);
+  setNumber(null);
+};
 
   const toggleModal = () => {
     setModalVisible(!modalVisible)
   }
-
+  console.log(number)
   return (
     <SafeAreaView className="bg-black flex-1">
       <ScrollView className="p-5">
@@ -32,6 +98,35 @@ const AntiVish = () => {
           </TouchableOpacity>
         </View>
 
+        <View style={styles.body}>
+          <Text style={{color: 'black', fontSize: 26, fontWeight: '700'}}>
+            Call Detection
+          </Text>
+          <Text style={[styles.text, {color: 'black'}]}>
+            Should the detection be on?
+          </Text>
+          <TouchableHighlight
+            style={{borderRadius: 50}}
+            onPress={featureOn ? stopListenerTapped : startListenerTapped}>
+            <View
+              style={{
+                width: 200,
+                height: 200,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: featureOn ? 'blue' : '#eb4034',
+                borderRadius: 50,
+              }}>
+              <Text style={styles.text}>{featureOn ? `ON` : `OFF`} </Text>
+            </View>
+          </TouchableHighlight>
+          {incoming && (
+            <Text style={{fontSize: 50, color: 'red'}}>
+              Incoming Call: {number}
+            </Text>
+          )}
+        </View>
+      
         {/* Protection Status */}
         <View className="bg-gray-800 p-4 rounded-xl mb-6">
           <View className="flex-row items-center">
@@ -137,6 +232,23 @@ const AntiVish = () => {
     </SafeAreaView>
   )
 }
+
+
+const styles = StyleSheet.create({
+  body: {
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+  },
+  text: {
+    padding: 20,
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#fff',
+  },
+  button: {},
+});
 
 export default AntiVish
 
