@@ -18,7 +18,9 @@
 <h3>Project Solution Features: </h3>
 <ul>
   <li> Personalized Cybersecurity Learning Pathway
-    <li>Customizable courses tailored to individual knowledge levels, covering the latest phishing tactics and online safety practices.</li>
+     <ul>
+         <li>Customizable courses tailored to individual knowledge levels, covering the latest phishing tactics and online safety practices.</li>
+     </ul>
   </li>
   <li>Real-time Sentiment Analysis and Deepfake AI Detection</li>
 </ul>
