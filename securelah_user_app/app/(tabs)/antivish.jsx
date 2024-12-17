@@ -2,6 +2,14 @@ import React, { useState } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, Modal } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import {
+  PermissionsAndroid,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+} from 'react-native';
+import CallDetectorManager from 'react-native-call-detection';
 
 const AntiVish = () => {
   const [modalVisible, setModalVisible] = useState(false)

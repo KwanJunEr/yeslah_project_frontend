@@ -15,7 +15,11 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": ["android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.READ_PHONE_STATE",
+        "android.permission.READ_CALL_LOG"
+    ]
     },
     "web": {
       "bundler": "metro",
