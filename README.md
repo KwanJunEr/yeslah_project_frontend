@@ -66,18 +66,6 @@
       <li>Provides actionable advice based on the user’s past encounters with phishing attempts, encouraging safer behavior over time.</li>
     </ul>
   </li>
-  <li>
-    <strong>Gamified Learning Experience</strong>
-    <ul>
-      <li>Engages users through quizzes, rewards, and achievement badges, making cybersecurity learning fun and effective.</li>
-    </ul>
-  </li>
-  <li>
-    <strong>Behavioral Risk Scoring</strong>
-    <ul>
-      <li>Tracks user interactions with potential threats and provides a risk score to help users understand their security habits.</li>
-    </ul>
-  </li>
 </ul>
 
 <h4>Web Admin Dashboard (For Businesses and Datasonic)</h4>
