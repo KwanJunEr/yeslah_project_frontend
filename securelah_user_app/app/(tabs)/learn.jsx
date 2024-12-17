@@ -5,6 +5,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const Learn = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const[pressed,setPressed] = useState(false);
 
   const newsItems = [
     { id: 1, title: "New Phishing Scam Targets Malaysian Banks", image: "https://plus.unsplash.com/premium_photo-1680363254554-d1c63ad8d33d?w=1000&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8YmFua3xlbnwwfHwwfHx8MA%3D%3D" },
@@ -19,6 +20,9 @@ const Learn = () => {
     { id: 4, title: "Social Engineering Defense", category: "Intermediate" },
   ];
 
+  const press = ()=>{
+      setPressed(!pressed);
+  }
   return (
     <SafeAreaView className="flex-1 bg-black">
       <ScrollView className="flex-1">
@@ -36,9 +40,19 @@ const Learn = () => {
               <Text className="text-white font-bold">Recent Vishing Attempt Detected</Text>
               <Text className="text-gray-300 mt-1">Unknown caller tried to obtain your financial information</Text>
             </View>
-            <TouchableOpacity className="bg-blue-500 rounded-lg p-3 items-center">
-              <Text className="text-white font-bold">Learn How to Protect Yourself</Text>
+            <TouchableOpacity className="bg-blue-500 rounded-lg p-3 items-center"
+            onPress={press}
+            >
+              <Text className="text-white font-bold text-center">Learn How to Protect Yourself with our Securelah AI Advisor</Text>
             </TouchableOpacity>
+            {pressed && ( // Render the response only if `pressed` is true
+              <View className="bg-white rounded-lg shadow-md p-4 mt-3">
+                <Text className="text-black font-bold">Tips to Protect Yourself:</Text>
+                <Text className="text-gray-700 mt-2">1. Never share your financial information over the phone.</Text>
+                <Text className="text-gray-700 mt-1">2. Verify the caller's identity by contacting the bank directly.</Text>
+                <Text className="text-gray-700 mt-1">3. Report suspicious calls to the authorities.</Text>
+              </View>
+            )}
           </View>
 
           {/* Recent Cybersecurity News */}
@@ -56,7 +70,7 @@ const Learn = () => {
 
           {/* Courses Section */}
           <View>
-            <Text className="text-white text-xl font-bold mb-3">Cybersecurity Courses</Text>
+            <Text className="text-white text-xl font-bold mb-3">Cybersecurity Courses Personalized For You</Text>
             
             {/* Search and Categories */}
             <View className="mb-4">
