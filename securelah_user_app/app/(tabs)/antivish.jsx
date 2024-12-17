@@ -1,89 +1,127 @@
-import React, { useState } from 'react'
-import { View, Text, ScrollView, TouchableOpacity, Modal, StyleSheet} from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
-import {
-  PermissionsAndroid,
-  TouchableHighlight,
-} from 'react-native';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Modal, StyleSheet, TouchableHighlight } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { PermissionsAndroid } from 'react-native';
 import CallDetectorManager from 'react-native-call-detection';
-import { useEffect , useRef} from 'react';
+import IncomingCallModal from '../../components/PhoneCallModal';
 
 const AntiVish = () => {
-  const [modalVisible, setModalVisible] = useState(false)
+  const [modalVisible, setModalVisible] = useState(false);
   const [featureOn, setFeatureOn] = useState(false);
   const [incoming, setIncoming] = useState(false);
   const [number, setNumber] = useState(null);
+  const [showIncomingCallModal, setShowIncomingCallModal] = useState(false);
+  const [showAlert1, setShowAlert1] = useState(false);
+  const [showAlert2, setShowAlert2] = useState(false);
+  const [showAlert3, setShowAlert3] = useState(false);
+  const [showAlert4, setShowAlert4] = useState(false);
+  const [showAlert5, setShowAlert5] = useState(false);
 
-// Use useRef to store the callDetector instance
-const callDetectorRef = useRef(null);
+  const callDetectorRef = useRef(null);
 
-useEffect(()=>{
-  askPermission();
-},[]);
+  useEffect(() => {
+    askPermission();
+  }, []);
 
-const askPermission = async () =>{
-  try {
-    const permissions = await PermissionsAndroid.requestMultiple([
-      PermissionsAndroid.PERMISSIONS.READ_CALL_LOG,
-      PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE,
-    ]);
-    console.log('Permissions are:', permissions);
-  } catch (err) {
-    console.warn(err);
-  }
-}
-
-const startListenerTapped = () => {
-  setFeatureOn(true);
-  
-  // Create call detector and store in ref
-  callDetectorRef.current = new CallDetectorManager(
-    (event, phoneNumber) => {
-      console.log(event, phoneNumber);
-      
-      switch(event) {
-        case 'Disconnected':
-          setIncoming(false);
-          setNumber(null);
-          break;
-        case 'Incoming':
-          setIncoming(true);
-          setNumber(phoneNumber);
-          break;
-        case 'Offhook':
-          setIncoming(true);
-          setNumber(phoneNumber);
-          break;
-        case 'Missed':
-          setIncoming(false);
-          setNumber(null);
-          break;
-      }
-    },
-    true, // read phone number on Android
-    () => {}, // permission denied callback
-    {
-      title: 'Phone State Permission',
-      message: 'This app needs access to your phone state to detect incoming calls.',
+  const askPermission = async () => {
+    try {
+      const permissions = await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.READ_CALL_LOG,
+        PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE,
+      ]);
+      console.log('Permissions are:', permissions);
+    } catch (err) {
+      console.warn(err);
     }
-  );
-};
+  };
 
-const stopListenerTapped = () => {
-  // Use current to access the ref and dispose
-  if (callDetectorRef.current) {
-    callDetectorRef.current.dispose();
-  }
-  setFeatureOn(false);
-  setIncoming(false);
-  setNumber(null);
-};
+  const toggleFeature = () => {
+    if (featureOn) {
+      stopListenerTapped();
+    } else {
+      startListenerTapped();
+    }
+  };
+
+  const startListenerTapped = () => {
+    setFeatureOn(true);
+    
+    callDetectorRef.current = new CallDetectorManager(
+      (event, phoneNumber) => {
+        console.log(event, phoneNumber);
+        
+        switch(event) {
+          case 'Disconnected':
+            setIncoming(false);
+            setNumber(null);
+            resetAlerts();
+            break;
+          case 'Incoming':
+            handleIncomingCall(phoneNumber);
+            break;
+          case 'Offhook':
+            handleIncomingCall(phoneNumber);
+            break;
+          case 'Missed':
+            setIncoming(false);
+            setNumber(null);
+            resetAlerts();
+            break;
+        }
+      },
+      true,
+      () => {},
+      {
+        title: 'Phone State Permission',
+        message: 'This app needs access to your phone state to detect incoming calls.',
+      }
+    );
+
+    // Simulate a call when turning the feature on
+    simulateCall();
+  };
+
+  const stopListenerTapped = () => {
+    if (callDetectorRef.current) {
+      callDetectorRef.current.dispose();
+    }
+    setFeatureOn(false);
+    setIncoming(false);
+    setNumber(null);
+    resetAlerts();
+  };
 
   const toggleModal = () => {
-    setModalVisible(!modalVisible)
-  }
-  console.log(number)
+    setModalVisible(!modalVisible);
+  };
+
+  const simulateCall = useCallback(() => {
+    const randomNumber = '+60' + Math.floor(Math.random() * 9000000000 + 1000000000);
+    handleIncomingCall(randomNumber);
+    
+    resetAlerts();
+    setShowAlert1(true);
+    setTimeout(() => setShowAlert2(true), 3000);
+    setTimeout(() => setShowAlert3(true), 6000);
+    setTimeout(() => setShowAlert4(true), 9000);
+    setTimeout(() => setShowAlert5(true), 12000);
+  }, [handleIncomingCall, resetAlerts]);
+
+  const handleIncomingCall = useCallback((phoneNumber) => {
+    setIncoming(true);
+    setNumber(phoneNumber);
+    setShowIncomingCallModal(true);
+  }, []);
+
+  const resetAlerts = () => {
+    setShowAlert1(false);
+    setShowAlert2(false);
+    setShowAlert3(false);
+    setShowAlert4(false);
+    setShowAlert5(false);
+  };
+
   return (
     <SafeAreaView className="bg-black flex-1">
       <ScrollView className="p-5">
@@ -98,37 +136,24 @@ const stopListenerTapped = () => {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.body}>
-          <Text style={{color: 'black', fontSize: 26, fontWeight: '700'}}>
+        <View className="bg-gray-600 rounded-md shadow-md flex items-center justify-center p-5">
+          <Text style={{color: 'white', fontSize: 26, fontWeight: '700', marginBottom: 10}}>
             Call Detection
           </Text>
-          <Text style={[styles.text, {color: 'black'}]}>
-            Should the detection be on?
-          </Text>
           <TouchableHighlight
-            style={{borderRadius: 50}}
-            onPress={featureOn ? stopListenerTapped : startListenerTapped}>
-            <View
-              style={{
-                width: 200,
-                height: 200,
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: featureOn ? 'blue' : '#eb4034',
-                borderRadius: 50,
-              }}>
-              <Text style={styles.text}>{featureOn ? `ON` : `OFF`} </Text>
-            </View>
+            className="p-2 bg-secondary w-[100px] h-[35px] rounded-xl"
+            onPress={toggleFeature}>
+            <Text className="text-lg text-center font-white font-extrabold">{featureOn ? `ON` : `OFF`}</Text>
           </TouchableHighlight>
           {incoming && (
-            <Text style={{fontSize: 50, color: 'red'}}>
+            <Text style={{fontSize: 20, color: 'red', marginTop: 10}}>
               Incoming Call: {number}
             </Text>
           )}
         </View>
       
         {/* Protection Status */}
-        <View className="bg-gray-800 p-4 rounded-xl mb-6">
+        <View className="bg-gray-800 p-4 rounded-xl mb-6 mt-6">
           <View className="flex-row items-center">
             <Icon name="shield-check" size={24} color="#4CAF50" />
             <Text className="text-white font-bold ml-2">Auto Vishing-Protect Enabled</Text>
@@ -140,21 +165,41 @@ const stopListenerTapped = () => {
         <View className="mb-6">
           <Text className="text-white text-xl font-bold mb-3">Real Time Alert</Text>
           <View className="flex flex-col space-y-3 gap-3">
-            <View className="bg-red-900 p-4 rounded-xl">
-              <Text className="text-white font-bold">Alert 1 - High Risk</Text>
-              <Text className="text-gray-300 text-xs">TimeStamp: {new Date().toLocaleString()}</Text>
-              <Text className="text-white mt-2">Unknown phone number detected. Deepfake and Sentiment Analysis Model is running to detect potential frauds.</Text>
-            </View>
-            <View className="bg-yellow-900 p-4 rounded-xl">
-              <Text className="text-white font-bold">Alert 2 - Medium Risk</Text>
-              <Text className="text-gray-300 text-xs">TimeStamp: {new Date(Date.now() - 300000).toLocaleString()}</Text>
-              <Text className="text-white mt-2">Potential attempt to phish your credit card information detected.</Text>
-            </View>
-            <View className="bg-blue-900 p-4 rounded-xl">
-              <Text className="text-white font-bold">Alert 3 - Information</Text>
-              <Text className="text-gray-300 text-xs">TimeStamp: {new Date(Date.now() - 600000).toLocaleString()}</Text>
-              <Text className="text-white mt-2">Reminder: Do not share any credit card info with unknown contacts.</Text>
-            </View>
+            {showAlert1 && (
+              <View className="bg-red-900 p-4 rounded-xl">
+                <Text className="text-white font-bold">Alert 1 - Low Risk</Text>
+                <Text className="text-gray-300 text-xs">TimeStamp: {new Date().toLocaleString()}</Text>
+                <Text className="text-white mt-2">Unknown phone number detected. Deepfake and Sentiment Analysis Model is running to detect potential frauds.</Text>
+              </View>
+            )}
+            {showAlert2 && (
+              <View className="bg-red-700 p-4 rounded-xl">
+                <Text className="text-white font-bold">Alert 2 - High Risk</Text>
+                <Text className="text-gray-300 text-xs">TimeStamp: {new Date().toLocaleString()}</Text>
+                <Text className="text-white mt-2">Caller seems to be using a deepfake voice to attempt to trick you. Please be aware.</Text>
+              </View>
+            )}
+            {showAlert3 && (
+              <View className="bg-yellow-900 p-4 rounded-xl">
+                <Text className="text-white font-bold">Alert 3 - Medium Risk</Text>
+                <Text className="text-gray-300 text-xs">TimeStamp: {new Date().toLocaleString()}</Text>
+                <Text className="text-white mt-2">Potential attempt to phish your credit card information detected. Caller seems to be very urgent in getting your info.</Text>
+              </View>
+            )}
+            {showAlert4 && (
+              <View className="bg-secondary-200 p-4 rounded-xl">
+                <Text className="text-white font-bold">Alert 4 - High Risk </Text>
+                <Text className="text-gray-300 text-xs">TimeStamp: {new Date().toLocaleString()}</Text>
+                <Text className="text-white mt-2">Please remain calm as user is detected to be experiencing certain levels of panic. Always be reminded that banks will not be threatening you with immediate search warrant if you did not pay your tax.</Text>
+              </View>
+            )}
+            {showAlert5 && (
+              <View className="bg-blue-900 p-4 rounded-xl">
+                <Text className="text-white font-bold">Alert 5 - Information</Text>
+                <Text className="text-gray-300 text-xs">TimeStamp: {new Date().toLocaleString()}</Text>
+                <Text className="text-white mt-2">Reminder: Do not share any credit card info with unknown contacts.</Text>
+              </View>
+            )}
           </View>
         </View>
 
@@ -229,10 +274,24 @@ const stopListenerTapped = () => {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
-  )
-}
 
+      <IncomingCallModal
+        visible={showIncomingCallModal}
+        phoneNumber={number}
+        onAccept={() => {
+          setShowIncomingCallModal(false);
+          // Handle call acceptance logic here
+        }}
+        onDecline={() => {
+          setShowIncomingCallModal(false);
+          setIncoming(false);
+          setNumber(null);
+          resetAlerts();
+        }}
+      />
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
   body: {
@@ -250,5 +309,5 @@ const styles = StyleSheet.create({
   button: {},
 });
 
-export default AntiVish
+export default AntiVish;
 
