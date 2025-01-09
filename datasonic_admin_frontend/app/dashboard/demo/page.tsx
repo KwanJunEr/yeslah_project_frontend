@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { AlertCircle, FileAudio, Upload } from 'lucide-react'
+import { AlertCircle, FileAudio, Upload, Play, Pause } from 'lucide-react'
 import './demo.css'
 
 type APIResponse = {
@@ -36,23 +36,29 @@ export default function DemoPage() {
   const [selectedSample, setSelectedSample] = useState<string>('')
   const [apiResponse, setApiResponse] = useState<APIResponse | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [audioUrl, setAudioUrl] = useState<string | null>(null)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
 
   const sampleAudios = [
-    { name: 'Sample 1', value: 'sample1.mp3' },
+    { name: 'Tech Support Scam - Undercover Investigation Phone Call  Federal Trade Commission', value: 'Tech Support Scam - Undercover Investigation Phone Call  Federal Trade Commission.mp3' },
     { name: 'Sample 2', value: 'sample2.mp3' },
     { name: 'Sample 3', value: 'sample3.mp3' },
   ]
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0])
-      setSelectedSample('')
+        const file = e.target.files[0]
+        setSelectedFile(file)
+        setSelectedSample('')
+        setAudioUrl(URL.createObjectURL(file))
     }
   }
 
   const handleSampleChange = (value: string) => {
     setSelectedSample(value)
     setSelectedFile(null)
+    setAudioUrl(`/audio/${value}`) // Assuming sample audio files are stored in a public 'audio' folder
   }
 
   // Global variable for base_url
@@ -64,9 +70,16 @@ const handleSubmit = async () => {
   setApiResponse(null)
 
   try {
-    // Step 1: Upload the file
-    let uploadedFilePath = await uploadFile(selectedFile)
+    let uploadedFilePath;  
+    if (selectedFile) {
+      // Step 1: Upload the file
+      uploadedFilePath = await uploadFile(selectedFile);
+    } else if (selectedSample) {
+      // Step 1 (Alternative): Use the sample path directly
+      uploadedFilePath = await uploadFile(`/audio/${selectedSample}`);
+    }
 
+    console.log(uploadedFilePath)
     // Step 2: Send the prompt and uploaded file to the API
     let result = await sendPrompt(uploadedFilePath)
 
@@ -81,27 +94,43 @@ const handleSubmit = async () => {
   }
 }
 
-// Upload file function
-const uploadFile = async (file: File | null) => {
-  if (!file) throw new Error("No file selected")
-
-  const formData = new FormData()
-  formData.append('file', file)
-
-  const url = `${base_url}/files/upload/94d56935-cd34-481c-98c0-8d4117725d0b`
-  const response = await fetch(url, {
-    method: 'POST',
-    body: formData,
-  })
-
-  if (!response.ok) {
-    throw new Error(`Error uploading file: ${response.statusText}`)
-  }
-
-  const data = await response.json()
-  console.log("File Upload Response:", data) // Log the file upload response for debugging
-  return data?.uploaded_file_path // Assuming the API returns the file path in this field
-}
+const uploadFile = async (fileOrPath: File | string) => {
+    let file;
+  
+    if (typeof fileOrPath === 'string') {
+      // Step 1: Fetch the file from the path
+      const response = await fetch(fileOrPath);
+      if (!response.ok) {
+        throw new Error(`Error fetching file from path: ${response.statusText}`);
+      }
+  
+      // Step 2: Convert the response to a Blob
+      const blob = await response.blob();
+      const fileName = fileOrPath.split('/').pop() || 'unknown_file'; // Extract the file name from the path
+      file = new File([blob], fileName); // Create a new File object
+    } else {
+      file = fileOrPath;
+    }
+  
+    // Step 3: Upload the file
+    const formData = new FormData();
+    formData.append('file', file);
+  
+    const url = `${base_url}/files/upload/94d56935-cd34-481c-98c0-8d4117725d0b`;
+    const response = await fetch(url, {
+      method: 'POST',
+      body: formData,
+    });
+  
+    if (!response.ok) {
+      throw new Error(`Error uploading file: ${response.statusText}`);
+    }
+  
+    const data = await response.json();
+    console.log("File Upload Response:", data); // Log the file upload response for debugging
+    return data?.uploaded_file_path; // Assuming the API returns the file path in this field
+  };
+  
 
 // Send prompt function
 const sendPrompt = async (uploadedFilePath: string) => {
@@ -146,6 +175,17 @@ const sendPrompt = async (uploadedFilePath: string) => {
     if (panicRating <= 60) return '😟'
     if (panicRating <= 80) return '😨'
     return '😱'
+  }
+
+  const togglePlayPause = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause()
+      } else {
+        audioRef.current.play()
+      }
+      setIsPlaying(!isPlaying)
+    }
   }
 
   return (
@@ -203,7 +243,28 @@ const sendPrompt = async (uploadedFilePath: string) => {
               </SelectContent>
             </Select>
           </div>
-          
+          {audioUrl && (
+            <div className="flex items-center space-x-2">
+              <Button
+                onClick={togglePlayPause}
+                variant="outline"
+                size="icon"
+                className="w-10 h-10 rounded-full"
+              >
+                {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+              </Button>
+              <audio
+                ref={audioRef}
+                src={audioUrl}
+                onEnded={() => setIsPlaying(false)}
+                className="hidden"
+              />
+              <span className="text-sm text-gray-500">
+                {isPlaying ? 'Playing...' : 'Click to play'}
+              </span>
+            </div>
+          )}
+
           <Button 
             onClick={handleSubmit} 
             disabled={isLoading || (!selectedFile && !selectedSample)}
