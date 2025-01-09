@@ -90,7 +90,7 @@ export function LoginForm() {
       </Button>
     </form>
     <div className="mt-6 text-center text-sm text-white dark:text-gray-300">
-      Don't have an account?{" "}
+      Dont have an account?{" "}
       <a
         href="#"
         className="text-blue-300 hover:text-blue-200 dark:text-blue-400 dark:hover:text-blue-300"
