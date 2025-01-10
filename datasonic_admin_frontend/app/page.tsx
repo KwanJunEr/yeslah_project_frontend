@@ -23,7 +23,7 @@ export default function Home() {
               </div>
               <div className="space-x-4">
                 <Button asChild>
-                  <Link href="#login">Login</Link>
+                  <Link href="dashboard">Login</Link>
                 </Button>
                 <Button variant="outline" asChild>
                   <Link href="#features">Learn More</Link>

@@ -42,8 +42,7 @@ export default function DemoPage() {
 
   const sampleAudios = [
     { name: 'Tech Support Scam - Undercover Investigation Phone Call  Federal Trade Commission', value: 'Tech Support Scam - Undercover Investigation Phone Call  Federal Trade Commission.mp3' },
-    { name: 'Sample 2', value: 'sample2.mp3' },
-    { name: 'Sample 3', value: 'sample3.mp3' },
+    { name: 'Elder Fraud Telemarketing Scam Call', value: 'elder-fraud-telemarketing-scam-call-recording.mp3' },
   ]
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,7 +61,12 @@ export default function DemoPage() {
   }
 
   // Global variable for base_url
-const base_url = "http://127.0.0.1:7860/api/v1"
+// local 
+//const base_url = "http://127.0.0.1:7860/api/v1"
+// public 
+const base_url = "https://excited-bluejay-endlessly.ngrok-free.app/api/v1"
+
+
 
 // Handle form submission
 const handleSubmit = async () => {
@@ -128,7 +132,8 @@ const uploadFile = async (fileOrPath: File | string) => {
   
     const data = await response.json();
     console.log("File Upload Response:", data); // Log the file upload response for debugging
-    return data?.uploaded_file_path; // Assuming the API returns the file path in this field
+    console.log("filepath:", data?.file_path)
+    return data?.file_path; // Assuming the API returns the file path in this field
   };
   
 
@@ -144,6 +149,7 @@ const sendPrompt = async (uploadedFilePath: string) => {
       },
     },
   }
+
 
   const response = await fetch(url, {
     method: 'POST',
