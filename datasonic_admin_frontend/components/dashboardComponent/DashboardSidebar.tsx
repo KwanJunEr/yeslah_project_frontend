@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { BarChart2, Home, Phone, Settings, Users, MessageSquare, BookOpen } from 'lucide-react';
+import { Home, Phone, Users, MessageSquare, BookOpen } from 'lucide-react';
 
 const navItems = [
   { icon: Home, label: 'Dashboard', href: '/dashboard' },
