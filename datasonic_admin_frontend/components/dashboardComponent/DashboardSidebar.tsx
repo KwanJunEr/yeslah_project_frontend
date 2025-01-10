@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { BarChart2, Home, Phone, Settings, Users, MessageSquare } from 'lucide-react';
+import { BarChart2, Home, Phone, Settings, Users, MessageSquare, BookOpen } from 'lucide-react';
 
 const navItems = [
   { icon: Home, label: 'Dashboard', href: '/dashboard' },
@@ -8,6 +8,7 @@ const navItems = [
   { icon: Users, label: 'Employees', href: '/dashboard/employees' },
   { icon: BarChart2, label: 'Reports', href: '/dashboard/reports' },
   { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
+  { icon: BookOpen, label: 'Demo', href: '/dashboard/demo' },
 ]
 
 export default function DashboardSidebar() {
