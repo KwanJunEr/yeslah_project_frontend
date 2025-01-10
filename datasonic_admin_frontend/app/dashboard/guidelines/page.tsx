@@ -67,7 +67,7 @@ const PastGuidelines: React.FC<PastGuidelinesProps> = ({
           onClick={onBack}
         >
           <FiArrowLeft />
-          Back to Departments
+          Back
         </Button>
       </div>
       <div className="flex justify-end mt-6"></div>
@@ -386,7 +386,7 @@ const PromptPage: React.FC<PromptPageProps> = ({ department, onBack }) => {
           onClick={onBack}
         >
           <FiArrowLeft />
-          Back to Departments
+          Back
         </Button>
       </div>
       <Card>
@@ -472,7 +472,7 @@ const App: React.FC = () => {
   const HomePage = () => (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold text-center mb-6">Employee Training</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {departments.map((department) => (
           <Card
             key={department.name}
@@ -491,7 +491,7 @@ const App: React.FC = () => {
 
   const DepartmentOptions = () => (
     <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <h2 className="text-2xl font-bold text-center mb-6">
           {selectedDepartment} Department
         </h2>
@@ -504,7 +504,7 @@ const App: React.FC = () => {
           }}
         >
           <FiArrowLeft />
-          Back to Departments
+          Back
         </Button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

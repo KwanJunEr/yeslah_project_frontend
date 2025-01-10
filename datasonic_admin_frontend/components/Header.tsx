@@ -9,7 +9,7 @@ const Header = () => {
           <span className="ml-2 text-2xl font-bold">SecureLah</span>
         </Link>
         <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Link className="text-sm font-medium hover:underline underline-offset-4" href="/dashboard/vishing">
+          <Link className="text-sm font-medium hover:underline underline-offset-4" href="/auth/sign-in">
             Login
           </Link>
         </nav>

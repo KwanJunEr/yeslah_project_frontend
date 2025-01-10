@@ -53,7 +53,7 @@ export default function DashboardPage() {
               <SelectItem value="90d">Last 90 days</SelectItem>
             </SelectContent>
           </Select>
-          <Button>Generate Report</Button>
+          {/* <Button>Generate Report</Button> */}
         </div>
       </div>
 

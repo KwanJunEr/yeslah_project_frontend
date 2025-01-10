@@ -5,9 +5,9 @@ const navItems = [
   { icon: Home, label: 'Dashboard', href: '/dashboard' },
   { icon: Phone, label: 'Vishing Attempts', href: '/dashboard/vishing' },
   { icon: MessageSquare, label: 'Smishing Attempts', href: '/dashboard/smishing' }, // New Smishing Page
-  { icon: Users, label: 'Employees', href: '/dashboard/employees' },
-  { icon: BarChart2, label: 'Reports', href: '/dashboard/reports' },
-  { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
+  { icon: Users, label: 'Guidelines', href: '/dashboard/guidelines' },
+  // { icon: BarChart2, label: 'Reports', href: '/dashboard/reports' },
+  // { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
   { icon: BookOpen, label: 'Demo', href: '/dashboard/demo' },
 ]
 
