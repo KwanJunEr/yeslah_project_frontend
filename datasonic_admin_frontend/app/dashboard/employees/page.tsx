@@ -21,6 +21,7 @@ import { scamCases } from "@/data/scamCases";
 import { pastGuidelines } from "@/data/pastGuidelines";
 import dotenv from "dotenv";
 dotenv.config();
+import { FiArrowLeft, FiChevronDown, FiChevronUp } from "react-icons/fi";
 
 // Define the departments
 interface Department {
@@ -48,25 +49,53 @@ const PastGuidelines: React.FC<PastGuidelinesProps> = ({
   const departmentGuidelines = pastGuidelines.filter(
     (guide) => guide.department === department
   );
+  const [expandedGuidelineId, setExpandedGuidelineId] = useState<number | null>(
+    null
+  );
+
+  const toggleGuideline = (id: number) => {
+    setExpandedGuidelineId((prev) => (prev === id ? null : id));
+  };
 
   return (
     <div className="container mx-auto p-6">
-      <h2 className="text-2xl font-bold mb-6">
-        Past Guidelines for {department}
-      </h2>
-      <ul className="list-disc ml-6">
-        {departmentGuidelines.map((guide) => (
-          <li key={guide.id} className="mb-4">
-            <h3 className="font-semibold">{guide.title}</h3>
-            <p className="text-sm text-gray-600">Date: {guide.date}</p>
-            <p className="text-gray-800 mt-2">{guide.content}</p>{" "}
-            {/* Show guideline content */}
-          </li>
-        ))}
-      </ul>
-      <Button className="mt-6" variant="outline" onClick={onBack}>
-        Back to Options
-      </Button>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold mb-6">Past Guidelines</h1>
+        <Button
+          variant="outline"
+          className="flex items-center gap-2"
+          onClick={onBack}
+        >
+          <FiArrowLeft />
+          Back to Departments
+        </Button>
+      </div>
+      <div className="flex justify-end mt-6"></div>
+      {departmentGuidelines.map((guideline) => (
+        <div key={guideline.id} className="mb-4 border rounded shadow-sm">
+          <div
+            className="p-4 flex justify-between items-center cursor-pointer hover:bg-gray-200 transition"
+            onClick={() => toggleGuideline(guideline.id)}
+          >
+            <div>
+              <h2 className="text-lg font-semibold">{guideline.title}</h2>
+              <p className="text-sm text-gray-500">Date: {guideline.date}</p>
+            </div>
+            {expandedGuidelineId === guideline.id ? (
+              <FiChevronUp className="text-xl" />
+            ) : (
+              <FiChevronDown className="text-xl" />
+            )}
+          </div>
+
+          {expandedGuidelineId === guideline.id && (
+            <div className="p-4 bg-white">
+              {/* Use the parseGuidelines function to render content */}
+              {parseGuidelines(guideline.content)}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 };
@@ -95,6 +124,125 @@ const departments: Department[] = [
     description: "Recognize fake partnership offers and social media phishing.",
   },
 ];
+
+const parseGuidelines = (guidelines: string): JSX.Element[] => {
+  const lines = guidelines.split("\n");
+  const elements: JSX.Element[] = [];
+  let currentList: string[] = [];
+  let currentCodeBlock: string[] = [];
+  let inCodeBlock = false;
+
+  const flushList = (isOrdered: boolean) => {
+    if (currentList.length > 0) {
+      elements.push(
+        isOrdered ? (
+          <ol
+            key={elements.length}
+            className="list-decimal ml-6 break-words whitespace-pre-wrap"
+          >
+            {currentList.map((item, index) => (
+              <li key={index}>{parseInlineFormatting(item)}</li>
+            ))}
+          </ol>
+        ) : (
+          <ul
+            key={elements.length}
+            className="list-disc ml-6 break-words whitespace-pre-wrap"
+          >
+            {currentList.map((item, index) => (
+              <li key={index}>{parseInlineFormatting(item)}</li>
+            ))}
+          </ul>
+        )
+      );
+      currentList = [];
+    }
+  };
+
+  const flushCodeBlock = () => {
+    if (currentCodeBlock.length > 0) {
+      elements.push(
+        <pre
+          key={elements.length}
+          className="bg-gray-100 p-4 rounded break-words whitespace-pre-wrap overflow-hidden"
+        >
+          {currentCodeBlock.join("\n")}
+        </pre>
+      );
+      currentCodeBlock = [];
+    }
+  };
+
+  const parseInlineFormatting = (text: string): JSX.Element => {
+    const parts = text.split(/(\*\*.*?\*\*)/g); // Split by bold (**)
+    return (
+      <>
+        {parts.map((part, index) =>
+          part.startsWith("**") && part.endsWith("**") ? (
+            <strong key={index}>{part.slice(2, -2)}</strong>
+          ) : (
+            part
+          )
+        )}
+      </>
+    );
+  };
+
+  lines.forEach((line, index) => {
+    const trimmedLine = line.trim();
+
+    if (trimmedLine.startsWith("```")) {
+      if (inCodeBlock) {
+        inCodeBlock = false;
+        flushCodeBlock();
+      } else {
+        inCodeBlock = true;
+      }
+      return;
+    }
+
+    if (inCodeBlock) {
+      currentCodeBlock.push(trimmedLine);
+      return;
+    }
+
+    if (trimmedLine === "---") {
+      flushList(false);
+      elements.push(
+        <hr key={elements.length} className="my-4 border-t border-gray-300" />
+      );
+    } else if (/^#{1,6}\s/.test(trimmedLine)) {
+      flushList(false);
+      const headingLevel = trimmedLine.match(/^#{1,6}/)?.[0].length || 1;
+      elements.push(
+        React.createElement(
+          `h${headingLevel}`,
+          {
+            key: index,
+            className: `font-bold mt-4 text-lg break-words whitespace-pre-wrap`,
+          },
+          parseInlineFormatting(trimmedLine.replace(/^#{1,6}\s*/, ""))
+        )
+      );
+    } else if (/^\d+\.\s/.test(trimmedLine)) {
+      currentList.push(trimmedLine.replace(/^\d+\.\s*/, ""));
+    } else if (trimmedLine.startsWith("*")) {
+      currentList.push(trimmedLine.replace(/^\*\s*/, ""));
+    } else if (trimmedLine) {
+      flushList(false);
+      elements.push(
+        <p key={index} className="mt-2 break-words whitespace-pre-wrap">
+          {parseInlineFormatting(trimmedLine)}
+        </p>
+      );
+    }
+  });
+
+  flushList(false);
+  flushCodeBlock();
+
+  return elements;
+};
 
 const callGeminiApi = async (prompt: string): Promise<string> => {
   const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY; // Use environment variable for the API key
@@ -192,14 +340,31 @@ const PromptPage: React.FC<PromptPageProps> = ({ department, onBack }) => {
   );
 
   const handleGenerateGuide = async () => {
-    if (selectedCase === null || !customPrompt.trim()) return;
+    if (selectedCase === null) return;
     setIsGenerating(true);
     setGeneratedGuide(null);
 
     const selectedScamCase = mockScamCases.find(
       (scam) => scam.id === selectedCase
     );
-    const prompt = `${customPrompt}\n\nBased on the following scam case: ${selectedScamCase?.description}`;
+    const prompt = `
+      Generate a comprehensive guideline based on the following scam case details:
+
+      1. **Scam Type**: ${selectedScamCase?.type}
+      2. **Date of Incident**: ${selectedScamCase?.date}
+      3. **Description**: ${selectedScamCase?.description}
+
+      ### Instructions:
+      - Include a detailed analysis of why this is a scam.
+      - Provide specific recommendations for employees in the ${department} department to avoid similar scams in the future.
+      - Ensure the output follows this structure:
+        - **Case Summary**
+        - **Why This is a Scam**
+        - **Recommendations**
+
+      Additional Context:
+      ${customPrompt || "No additional context provided."}
+    `;
 
     try {
       const apiResponse = await callGeminiApi(prompt);
@@ -211,68 +376,16 @@ const PromptPage: React.FC<PromptPageProps> = ({ department, onBack }) => {
     }
   };
 
-  const parseGuidelines = (guidelines: string): JSX.Element[] => {
-    const lines = guidelines.split("\n"); // Split by single newline for detailed parsing
-    const elements: JSX.Element[] = [];
-    let currentList: string[] = []; // To track ongoing list items
-
-    const flushList = () => {
-      if (currentList.length > 0) {
-        elements.push(
-          <ul key={elements.length} className="list-disc ml-6">
-            {currentList.map((item, index) => (
-              <li key={index}>{item}</li>
-            ))}
-          </ul>
-        );
-        currentList = [];
-      }
-    };
-
-    lines.forEach((line, index) => {
-      line = line.trim();
-
-      if (line.startsWith("##")) {
-        // Heading (##)
-        flushList();
-        elements.push(
-          <h3 key={index} className="text-lg font-bold mt-4">
-            {line.replace(/^##\s*/, "")} {/* Remove ## */}
-          </h3>
-        );
-      } else if (line.startsWith("**")) {
-        // Bold/Section Header (**)
-        flushList();
-        elements.push(
-          <h4 key={index} className="font-semibold mt-4">
-            {line.replace(/\*\*/g, "")} {/* Remove ** */}
-          </h4>
-        );
-      } else if (line.startsWith("*")) {
-        // List item (*)
-        currentList.push(line.replace(/^\*\s*/, "")); // Remove * and trim
-      } else if (line) {
-        // Paragraph
-        flushList();
-        elements.push(
-          <p key={index} className="mt-2">
-            {line}
-          </p>
-        );
-      }
-    });
-
-    // Handle any remaining list items
-    flushList();
-
-    return elements;
-  };
-
   return (
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">{department} Guidelines</h1>
-        <Button variant="outline" onClick={onBack}>
+        <Button
+          variant="outline"
+          className="flex items-center gap-2"
+          onClick={onBack}
+        >
+          <FiArrowLeft />
           Back to Departments
         </Button>
       </div>
@@ -333,9 +446,7 @@ const PromptPage: React.FC<PromptPageProps> = ({ department, onBack }) => {
 
           <Button
             onClick={handleGenerateGuide}
-            disabled={
-              selectedCase === null || !customPrompt.trim() || isGenerating
-            }
+            disabled={selectedCase === null || isGenerating}
           >
             {isGenerating ? "Generating..." : "Generate Guidelines"}
           </Button>
@@ -365,11 +476,11 @@ const App: React.FC = () => {
         {departments.map((department) => (
           <Card
             key={department.name}
-            className="cursor-pointer hover:shadow-md transition"
+            className="cursor-pointer hover:shadow-lg transition"
             onClick={() => setSelectedDepartment(department.name)}
           >
             <CardHeader>
-              <CardTitle>{department.name}</CardTitle>
+              <CardTitle className="text-primary">{department.name}</CardTitle>
               <CardDescription>{department.description}</CardDescription>
             </CardHeader>
           </Card>
@@ -380,9 +491,22 @@ const App: React.FC = () => {
 
   const DepartmentOptions = () => (
     <div className="container mx-auto p-6">
-      <h2 className="text-2xl font-bold text-center mb-6">
-        {selectedDepartment} Department
-      </h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-center mb-6">
+          {selectedDepartment} Department
+        </h2>
+        <Button
+          className="mt-6"
+          variant="outline"
+          onClick={() => {
+            setSelectedDepartment(null);
+            setSelectedFeature(null);
+          }}
+        >
+          <FiArrowLeft />
+          Back to Departments
+        </Button>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Card
           className="cursor-pointer hover:shadow-md transition"
@@ -407,16 +531,6 @@ const App: React.FC = () => {
           </CardHeader>
         </Card>
       </div>
-      <Button
-        className="mt-6"
-        variant="outline"
-        onClick={() => {
-          setSelectedDepartment(null);
-          setSelectedFeature(null);
-        }}
-      >
-        Back to Departments
-      </Button>
     </div>
   );
 
