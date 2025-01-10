@@ -26,12 +26,12 @@ import {
 } from "@/components/ui/table";
 
 // Type for hourly scam data
-interface HourlyScamData {
-  hour: string;
-  fakeJobPosts: number;
-  lotteryScams: number;
-  bankAccountIssues: number;
-}
+// interface HourlyScamData {
+//   hour: string;
+//   fakeJobPosts: number;
+//   lotteryScams: number;
+//   bankAccountIssues: number;
+// }
 
 // Type for confidence data
 interface ConfidenceData {
@@ -46,7 +46,7 @@ const states = Object.keys(mockDailySmishingData);
 export default function SmishingPage() {
   const [selectedState, setSelectedState] = useState<string>(states[0]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [hourlyData, setHourlyData] = useState<HourlyScamData[]>([]);
+  // const [hourlyData, setHourlyData] = useState<HourlyScamData[]>([]);
   const [chartData, setChartData] = useState<ChartData<"bar"> | null>(null);
   const [confidenceData, setConfidenceData] = useState<ConfidenceData[]>([]);
 
@@ -85,7 +85,7 @@ export default function SmishingPage() {
     } else {
       // Hourly view
       const hourlyDataForDate = mockHourlyData[selectedDate] || [];
-      setHourlyData(hourlyDataForDate);
+      // setHourlyData(hourlyDataForDate);
       setChartData({
         labels: hourlyDataForDate.map((d) => d.hour),
         datasets: [

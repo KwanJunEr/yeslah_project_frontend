@@ -85,7 +85,7 @@ const handleSubmit = async () => {
 
     console.log(uploadedFilePath)
     // Step 2: Send the prompt and uploaded file to the API
-    let result = await sendPrompt(uploadedFilePath)
+    const result = await sendPrompt(uploadedFilePath)
 
     // Step 3: Process the response
     console.log("Processed API Response:", result) // Log the simplified response

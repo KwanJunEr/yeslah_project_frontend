@@ -26,11 +26,11 @@ import {
 } from "@/components/ui/table";
 
 // Type for hourly scam data
-interface HourlyScamData {
-  hour: string;
-  deepfake: number;
-  human: number;
-}
+// interface HourlyScamData {
+//   hour: string;
+//   deepfake: number;
+//   human: number;
+// }
 
 // Type for confidence data
 interface ConfidenceData {
@@ -44,7 +44,7 @@ const states = Object.keys(mockDailyScamData);
 export default function VishingPage() {
   const [selectedState, setSelectedState] = useState<string>(states[0]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [hourlyData, setHourlyData] = useState<HourlyScamData[]>([]);
+  // const [hourlyData, setHourlyData] = useState<HourlyScamData[]>([]);
   const [chartData, setChartData] = useState<ChartData<"bar"> | null>(null);
   const [confidenceData, setConfidenceData] = useState<ConfidenceData[]>([]);
 
@@ -76,7 +76,7 @@ export default function VishingPage() {
     } else {
       // Hourly view
       const hourlyDataForDate = mockHourlyData[selectedDate] || [];
-      setHourlyData(hourlyDataForDate);
+      // setHourlyData(hourlyDataForDate);
       setChartData({
         labels: hourlyDataForDate.map((d) => d.hour),
         datasets: [
